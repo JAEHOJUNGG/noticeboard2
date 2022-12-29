@@ -1,0 +1,1 @@
+<p class="mt-4 mb-3 text-center">&copy; 2017 - 2022</p>

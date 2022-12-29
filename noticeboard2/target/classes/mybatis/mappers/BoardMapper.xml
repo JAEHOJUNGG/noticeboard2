@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.noticeboard2.mapper.BoardMapper">
+    <insert id="createBoard" parameterType="com.example.noticeboard2.vo.BoardVo">
+        INSERT INTO board( user_id
+                , title
+                , content
+                , board_time)
+        VALUES ( #{userId}
+                , #{title}
+                , #{content}
+                , NOW())
+    </insert>
+
+    <select id="viewList" resultType="com.example.noticeboard2.vo.BoardVo">
+    SELECT row_number() over (order by b.board_time) as num
+    ,b.board_number
+    ,b.user_id
+    ,b.title
+    ,b.content
+    ,b.board_time
+    FROM board b
+    WHERE 1=1
+    <if test="searchValue !=null and searchValue!=''">
+        <if test="searchKey !=null and searchKey=='title'">
+            AND b.title LIKE CONCAT('%',#{searchValue},'%')
+        </if>
+        <if test="searchKey !=null and searchKey=='content'">
+            AND b.content LIKE CONCAT('%',#{searchValue},'%')
+        </if>
+        <if test="searchKey !=null and searchKey=='userId'">
+            AND b.user_id LIKE CONCAT('%',#{searchValue},'%')
+        </if>
+    </if>
+    order by num desc
+    </select>
+
+    <select id="getBoardDetail" resultType="com.example.noticeboard2.vo.BoardVo">
+        SELECT b.board_number
+        , b.title
+        , b.content
+        , b.board_time
+        , b.user_id as register_id
+        FROM board b
+        WHERE b.board_number = #{boardNumber}
+    </select>
+
+    <delete id="boardDelete" parameterType="com.example.noticeboard2.vo.BoardVo">
+        DELETE
+        FROM board b
+        WHERE b.board_number = #{boardNumber}
+    </delete>
+
+
+
+    <update id="changeBoard" parameterType="com.example.noticeboard2.vo.BoardVo">
+        UPDATE board
+        SET title=#{title},content=#{content}, board_time=now()
+        WHERE board_number = #{boardNumber}
+    </update>
+
+
+</mapper>
